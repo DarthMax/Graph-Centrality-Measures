@@ -6,7 +6,7 @@ EDGES = [
   [3,5],
   [5,7],
   [4,7],
-  [4,6]  
+  [4,6]
 ]
 
 def neighbors(v)
@@ -19,46 +19,42 @@ centrality = Hash.new(0)
 VERTICES.each do |s|
     stack = []
     predecessors = Hash.new {|h,k| h[k]=[]}
-    
+
     sigma = Hash.new(0)
     sigma[s]=1
-    
+
     d=Hash.new(-1)
     d[s]=0
-    
+
     queue = [s]
-    
+
     while !queue.empty? do
-        v = queue.pop
+        v = queue.shift
         stack << v
-                
+
         neighbors(v).each do |w|
             if d[w] < 0
                 queue << w
                 d[w] = d[v]+1
             end
-            
+
             if d[w] == d[v]+1
                 sigma[w] += sigma[v]
                 predecessors[w] << v
             end
         end
     end
-    
-    
+
+
     delta = Hash.new(0)
-    
+
     while !stack.empty? do
         w = stack.pop
-        predecessors[w].each {|v| delta[v] += (sigma[v]/sigma[w].to_f) * (1+delta[w]) }
+        predecessors[w].each { |v2| delta[v2] += (sigma[v2]/sigma[w].to_f) * (1+delta[w]) }
         centrality[w] += delta[w] unless w==s
     end
 end
-                             
+
 centrality.each_pair do |v,c|
     puts "centrality of #{v} is #{c}"
 end
-
-
-
-
