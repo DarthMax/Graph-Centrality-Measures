@@ -1,6 +1,5 @@
 package bigdata.GellyTest;
 
-import java.awt.List;
 import java.util.ArrayList;
 
 import org.apache.flink.api.java.DataSet;
@@ -12,7 +11,6 @@ import org.apache.flink.graph.Vertex;
 import org.apache.flink.graph.spargel.MessageIterator;
 import org.apache.flink.graph.spargel.MessagingFunction;
 import org.apache.flink.graph.spargel.VertexUpdateFunction;
-import org.apache.flink.types.NullValue;
 
 /**
  * Hello world!
@@ -20,6 +18,9 @@ import org.apache.flink.types.NullValue;
  */
 public class App 
 {
+	
+	public static String source = "";
+	
     public static void main( String[] args )
     {
    
@@ -27,13 +28,13 @@ public class App
     	ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
     	
     	ArrayList< Vertex< String, Tuple2< Long, ArrayList< String > > > > vertices = new ArrayList< Vertex< String, Tuple2< Long, ArrayList< String > > > >();
-    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "A", new Tuple2< Long, ArrayList< String > >( Long.MAX_VALUE, new ArrayList< String >() ) ) );
-    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "B", new Tuple2< Long, ArrayList< String > >( Long.MAX_VALUE, new ArrayList< String >() ) ) );
-    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "C", new Tuple2< Long, ArrayList< String > >( Long.MAX_VALUE, new ArrayList< String >() ) ) );
-    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "D", new Tuple2< Long, ArrayList< String > >( Long.MAX_VALUE, new ArrayList< String >() ) ) );
-    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "E", new Tuple2< Long, ArrayList< String > >( Long.MAX_VALUE, new ArrayList< String >() ) ) );
-    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "F", new Tuple2< Long, ArrayList< String > >( Long.MAX_VALUE, new ArrayList< String >() ) ) );
-    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "G", new Tuple2< Long, ArrayList< String > >( Long.MAX_VALUE, new ArrayList< String >() ) ) );
+    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "A", new Tuple2< Long, ArrayList< String > >( -1L, new ArrayList< String >() ) ) );
+    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "B", new Tuple2< Long, ArrayList< String > >( -1L, new ArrayList< String >() ) ) );
+    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "C", new Tuple2< Long, ArrayList< String > >( -1L, new ArrayList< String >() ) ) );
+    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "D", new Tuple2< Long, ArrayList< String > >( -1L, new ArrayList< String >() ) ) );
+    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "E", new Tuple2< Long, ArrayList< String > >( -1L, new ArrayList< String >() ) ) );
+    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "F", new Tuple2< Long, ArrayList< String > >( -1L, new ArrayList< String >() ) ) );
+    	vertices.add( new Vertex< String, Tuple2< Long, ArrayList< String > > >( "G", new Tuple2< Long, ArrayList< String > >( -1L, new ArrayList< String >() ) ) );
     	
     	ArrayList< Edge< String, Long > > edges = new ArrayList< Edge< String, Long > >();
     	edges.add( new Edge< String, Long >( "A", "B", 7l ) );
@@ -51,8 +52,9 @@ public class App
     	Graph< String, Tuple2< Long, ArrayList< String > >, Long > graph = Graph.fromCollection(vertices, edges, env);
     	
         // iterative processing
-        int maxIterations = 10;
+        int maxIterations = 100;
         
+        source = "A";
         Graph< String, Tuple2< Long, ArrayList< String > >, Long > result = graph.runVertexCentricIteration( new VertexDistanceUpdater(),  new MinDistanceMessenger(), maxIterations);
         
         DataSet< Vertex< String, Tuple2< Long, ArrayList< String > > > > sssp = result.getVertices();
@@ -68,6 +70,7 @@ public class App
         
     }
 
+	@SuppressWarnings("serial")
 	public static final class MinDistanceMessenger extends MessagingFunction< String, Tuple2< Long, ArrayList< String > >, Tuple2< Long, ArrayList< String > >, Long > {
 	
 		@Override
@@ -75,12 +78,15 @@ public class App
 			
 			vertex.f1.f1.add( vertex.f0 );
 			for( Edge< String, Long > edge : getEdges() ) {
-				sendMessageTo( edge.getTarget(), new Tuple2< Long, ArrayList< String > >( vertex.f1.f0 + edge.getValue(), vertex.f1.f1 ) );
+				if( vertex.f1.f0 != -1L ) sendMessageTo( edge.getTarget(), new Tuple2< Long, ArrayList< String > >( vertex.f1.f0 + edge.getValue(), vertex.f1.f1 ) );
+				else sendMessageTo( edge.getTarget(), new Tuple2< Long, ArrayList< String > >( 0 + edge.getValue(), vertex.f1.f1 ) );
+				//System.out.println( vertex.f0 + ": " + (vertex.f1.f0 + edge.getValue()) );
 			}
 		}
 		
 	}
 	
+	@SuppressWarnings("serial")
 	public static final class VertexDistanceUpdater extends VertexUpdateFunction< String, Tuple2< Long, ArrayList< String > >, Tuple2< Long, ArrayList< String > > > {
 	
 		@Override
@@ -89,13 +95,13 @@ public class App
 			ArrayList< String > predecessors = new ArrayList< String >();
 			
 			for( Tuple2< Long, ArrayList< String > > msg : inMessages ) {
-				if( msg.f0 < minDistance ) {
+				if( msg.f0 < minDistance && msg.f1.contains( source ) ) {
 					minDistance = msg.f0;
-					predecessors = msg.f1;
+					predecessors = new ArrayList< String >( msg.f1 );
 				}
 			}
 			
-			if( vertex.getValue().f0 > minDistance ) {
+			if( vertex.getValue().f0 > minDistance || vertex.getValue().f0 == -1L ) {
 				setNewVertexValue( new Tuple2< Long, ArrayList< String > >( minDistance, predecessors ) );
 			}
 		}
