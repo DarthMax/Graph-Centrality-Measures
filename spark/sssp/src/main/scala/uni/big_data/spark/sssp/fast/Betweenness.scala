@@ -11,13 +11,13 @@ object Betweenness {
 
   def run[T](graph: Graph[T, Double]): Graph[Double, Double] = {
     val betweennessGraph = graph.mapVertices((id, _) =>
-      (0.0, 0.0, Array[VertexId](), Array[VertexId]())
+      (0.0, 0.0, Array[VertexId](), 0L)
     ).cache()
 
-    def runBoth(graph: Graph[(Double, Double, Array[VertexId], Array[VertexId]), Double],
-                source: (VertexId, (Double, Double, Array[VertexId], Array[VertexId]))
-               ): Graph[(Double, Double, Array[VertexId], Array[VertexId]), Double] = {
-      println("\n\n" + source._1)
+    def runBoth(graph: Graph[(Double, Double, Array[VertexId], Long), Double],
+                source: (VertexId, (Double, Double, Array[VertexId], Long))
+               ): Graph[(Double, Double, Array[VertexId], Long), Double] = {
+      //      println("\n\n" + source._1)
       SingleSourceCalcBetweenness.run(
         SingleSourceSuccessorsFromPredecessors.run(
           SingleSourcePredecessors.run(graph, source._1),

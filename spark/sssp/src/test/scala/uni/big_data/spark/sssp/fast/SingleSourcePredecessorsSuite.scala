@@ -29,22 +29,22 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
     )
 
     val expected_distances = Array(
-      (4l, (0.0, 2.0, Array[VertexId](2l, 3l).deep, Array[VertexId]().deep)),
-      (1l, (0.0, 0.0, Array[VertexId]().deep, Array[VertexId]().deep)),
-      (2l, (0.0, 1.0, Array[VertexId](1l).deep, Array[VertexId]().deep)),
-      (3l, (0.0, 1.0, Array[VertexId](1l).deep, Array[VertexId]().deep))
+      (4l, (0.0, 2.0, Array[VertexId](2l, 3l).deep, 0L)),
+      (1l, (0.0, 0.0, Array[VertexId]().deep, 0L)),
+      (2l, (0.0, 1.0, Array[VertexId](1l).deep, 0L)),
+      (3l, (0.0, 1.0, Array[VertexId](1l).deep, 0L))
     )
 
 
     val testGraph = Graph(vertices, edges).mapVertices((id, _) =>
-      (0.0, 0.0, Array[VertexId](), Array[VertexId]())
+      (0.0, 0.0, Array[VertexId](), 0L)
     ).cache()
 
     val shortest_paths = SingleSourcePredecessors.run(testGraph, 1L)
 
     //Predecessor array must be deep compared
-    val res = shortest_paths.vertices.collect().map((vertex: (VertexId, (Double, Double, Array[VertexId], Array[VertexId]))) =>
-      (vertex._1, (vertex._2._1, vertex._2._2, vertex._2._3.deep, vertex._2._4.deep))
+    val res = shortest_paths.vertices.collect().map((vertex: (VertexId, (Double, Double, Array[VertexId], Long))) =>
+      (vertex._1, (vertex._2._1, vertex._2._2, vertex._2._3.deep, vertex._2._4))
     )
 
     println("shortest paths")
@@ -53,7 +53,7 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
       println(s"Betweenness: ${data._2._1}")
       println(s"Distance: ${data._2._2}")
       println(s"Predecessors: ${data._2._3.mkString(",")}")
-      println(s"Succcessors: ${data._2._4.mkString(",")}")
+      println(s"Number of Succcessors: ${data._2._4}")
     })
 
     assert(res.deep == expected_distances.deep)
@@ -80,21 +80,21 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
 
     val expected_distances = Array(
       (4l, (0.0, 0.0, Array[VertexId]().deep, Array[VertexId]().deep)),
-      (1l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, Array[VertexId]().deep)),
-      (2l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, Array[VertexId]().deep)),
-      (3l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, Array[VertexId]().deep))
+      (1l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, 0L)),
+      (2l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, 0L)),
+      (3l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, 0L))
     )
 
 
     val testGraph = Graph(vertices, edges).mapVertices((id, _) =>
-      (0.0, 0.0, Array[VertexId](), Array[VertexId]())
+      (0.0, 0.0, Array[VertexId](), 0L)
     ).cache()
 
     val shortest_paths = SingleSourcePredecessors.run(testGraph, 4L)
 
     //Predecessor array must be deep compared
-    val res = shortest_paths.vertices.collect().map((vertex: (VertexId, (Double, Double, Array[VertexId], Array[VertexId]))) =>
-      (vertex._1, (vertex._2._1, vertex._2._2, vertex._2._3.deep, vertex._2._4.deep))
+    val res = shortest_paths.vertices.collect().map((vertex: (VertexId, (Double, Double, Array[VertexId], Long))) =>
+      (vertex._1, (vertex._2._1, vertex._2._2, vertex._2._3.deep, vertex._2._4))
     )
 
     println("shortest paths")
@@ -103,7 +103,7 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
       println(s"Betweenness: ${data._2._1}")
       println(s"Distance: ${data._2._2}")
       println(s"Predecessors: ${data._2._3.mkString(",")}")
-      println(s"Succcessors: ${data._2._4.mkString(",")}")
+      println(s"Number of Succcessors: ${data._2._4}")
     })
 
     assert(res.deep == expected_distances.deep)

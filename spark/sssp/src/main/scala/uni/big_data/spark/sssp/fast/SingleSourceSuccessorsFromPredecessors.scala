@@ -3,58 +3,45 @@ package uni.big_data.spark.sssp.fast
 import org.apache.spark.graphx._
 
 /**
-  * This is the mediate phase.
-  * Try to find the last elements
-  * and find out for each vertex,
-  * from which it will get new messages
+  * Calculate for every vertex how many successors there are.
+  * Store them in Long value.
   * Created by wolf on 04.12.15.
   **/
 object SingleSourceSuccessorsFromPredecessors {
 
-  // Betweenness value (1), Double Variable for calulations (2), Predeccessors (3), Successors (4)
-  def run[T](graph: Graph[(Double, Double, Array[VertexId], Array[VertexId]), Double], sourceId: VertexId):
-  Graph[(Double, Double, Array[VertexId], Array[VertexId]), Double] = {
-    // if a vertex has no successors it knows, that it is the last node
-    // if there are successors store the node ids in a list to know in next step,
-    // if all successors has send messages to the current vertex.
-    println("Destinate Successors")
+  // Betweenness value (1), Double Variable for calulations (2), Predeccessors (3), Nr of Successors (4)
+  def run(graph: Graph[(Double, Double, Array[VertexId], Long), Double],
+          sourceId: VertexId):
+  Graph[(Double, Double, Array[VertexId], Long), Double] = {
+
     def vertexProgramm(id: VertexId,
-                       nodeData: (Double, Double, Array[VertexId], Array[VertexId]),
-                       newData: (Double, Array[VertexId])):
-    (Double, Double, Array[VertexId], Array[VertexId]) = {
-      //The new Node ist the old Node with sending boolean form new Data and successor list added with new Data of successors
-      // the predeccessor is the same
-      if (newData._1 == 1.0 && newData._2.length == 0) //initial message (first round)
-      //initialize with flag to send
-        (nodeData._1, newData._1, nodeData._3, newData._2)
+                       nodeData: (Double, Double, Array[VertexId], Long),
+                       newData: Long):
+    (Double, Double, Array[VertexId], Long) = {
+      if (newData == Long.MinValue) //initial message (first round)
+        (nodeData._1, 1.0, nodeData._3, 0L) //initialize with flag: "ready to sent"
       else
-        (nodeData._1, newData._1, nodeData._3, nodeData._4 ++ newData._2)
+        (nodeData._1, 0.0, nodeData._3, nodeData._4 + newData) //flag: "do not send any more"
     }
 
-    // if a vertex is a last vertex: send a messaage to all
-    def sendMsg(triplet: EdgeTriplet[(Double, Double, Array[VertexId], Array[VertexId]), Double]):
-    Iterator[(VertexId, (Double, Array[VertexId]))] = {
-      // if there is a predeccessor send a message with own id to it.
-      // src and dst has to be reversed because it is a directed graph
-      // Is the id of the source in the predecessor list of the destionation (value 3)?
-      // And there has no message been send yet (stored in value 2
-      // Then send a message to the source to let it know which successor there are
-      println("one Successor Message send")
-      if (triplet.dstAttr._3.contains(triplet.srcId) && (triplet.dstAttr._2 == 1.0)) {
-        Iterator((triplet.srcId, (0.0, Array(triplet.dstId))),
-          // make destination clear that there is no need to send anymore
-          (triplet.dstId, (0.0, Array[VertexId]()))
-        )
+    def sendMsg(triplet: EdgeTriplet[(Double, Double, Array[VertexId], Long), Double]):
+    Iterator[(VertexId, Long)] = {
+      if (triplet.dstAttr._3.contains(triplet.srcId) // If the source is in predecessor list from destination
+        && triplet.dstAttr._2 == 1.0 // and this is the first message
+        && triplet.srcId != sourceId) // and the source is not the global sourceId
+      {
+        Iterator((triplet.srcId, 1L), // There is one successor in source
+          (triplet.dstId, 0L)) // No messages needed to be sent from destination
       }
       else
         Iterator.empty
     }
 
-    def msgCombiner(a: (Double, Array[VertexId]), b: (Double, Array[VertexId])): (Double, Array[VertexId]) = {
-      (Math.min(a._1, b._1), a._2 ++ b._2)
+    def msgCombiner(a: Long, b: Long): Long = {
+      a + b //sum up successors
     }
 
-    Pregel(graph, (1.0, Array[VertexId]()))(
+    Pregel(graph, Long.MinValue)(
       vertexProgramm, sendMsg, msgCombiner
     )
   }
