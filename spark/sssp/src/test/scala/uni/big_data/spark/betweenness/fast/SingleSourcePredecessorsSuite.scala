@@ -1,4 +1,4 @@
-package uni.big_data.spark.sssp.fast
+package uni.big_data.spark.betweenness.fast
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.apache.spark.graphx._
@@ -50,7 +50,7 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
     println("shortest paths")
     shortest_paths.vertices.collect.foreach((data) => {
       println(s"${data._1}: -----")
-      println(s"Betweenness: ${data._2._1}")
+      println(s"BetweennessBase: ${data._2._1}")
       println(s"Distance: ${data._2._2}")
       println(s"Predecessors: ${data._2._3.mkString(",")}")
       println(s"Number of Succcessors: ${data._2._4}")
@@ -58,7 +58,7 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
 
     assert(res.deep == expected_distances.deep)
   }
-  test("test Betweenness with no shortest path (inifite loop problem)") {
+  test("test BetweennessBase with no shortest path (inifite loop problem)") {
     //same graph start at vertex 4
     val vertices: RDD[(VertexId, Int)] = sc.parallelize(
       Array(
@@ -100,7 +100,7 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
     println("shortest paths")
     shortest_paths.vertices.collect.foreach((data) => {
       println(s"${data._1}: -----")
-      println(s"Betweenness: ${data._2._1}")
+      println(s"BetweennessBase: ${data._2._1}")
       println(s"Distance: ${data._2._2}")
       println(s"Predecessors: ${data._2._3.mkString(",")}")
       println(s"Number of Succcessors: ${data._2._4}")

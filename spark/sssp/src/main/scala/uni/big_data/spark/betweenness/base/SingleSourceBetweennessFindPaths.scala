@@ -1,4 +1,4 @@
-package uni.big_data.spark.sssp
+package uni.big_data.spark.betweenness.base
 
 import org.apache.spark.graphx._
 
@@ -11,7 +11,7 @@ object SingleSourceBetweennessFindPaths {
 
   def run[T](graph: Graph[(Double, Double, Array[VertexId]), Double], sourceId: VertexId):
   Graph[(Double, Double, Array[VertexId]), Double] = {
-    //initialize sssp graph and leave value._1 untouched
+    //initialize betweenness graph and leave value._1 untouched
     val ssspGraph = graph.mapVertices((id, value) =>
       if (id == sourceId)
         (value._1, 0.0, Array[VertexId]())

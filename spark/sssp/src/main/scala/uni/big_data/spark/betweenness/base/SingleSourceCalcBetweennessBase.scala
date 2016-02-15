@@ -1,11 +1,11 @@
-package uni.big_data.spark.sssp
+package uni.big_data.spark.betweenness.base
 
 import org.apache.spark.graphx._
 
 /**
   * Created by wolf on 04.12.15.
   **/
-object SingleSourceCalcBetweenness {
+object SingleSourceCalcBetweennessBase {
 
   def run[T](graph: Graph[(Double, Double, Array[VertexId]), Double], sourceId: VertexId):
   Graph[(Double, Double, Array[VertexId]), Double] = {

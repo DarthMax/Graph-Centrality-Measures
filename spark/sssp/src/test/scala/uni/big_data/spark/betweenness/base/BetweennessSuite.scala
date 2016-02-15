@@ -1,4 +1,4 @@
-package uni.big_data.spark.sssp
+package uni.big_data.spark.betweenness.base
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.apache.spark.graphx._
@@ -50,14 +50,14 @@ class BetweennessSuite extends FunSuite with SharedSparkContext {
     println("shortest paths")
     shortest_paths.vertices.collect.foreach((data) => {
       println(s"${data._1}: -----")
-      println(s"Betweenness: ${data._2._1}")
+      println(s"BetweennessBase: ${data._2._1}")
       println(s"Distance: ${data._2._2}")
       println(s"Predecessors: ${data._2._3.mkString(",")}")
     })
 
     assert(res.deep == expected_distances.deep)
   }
-  test("test Betweenness with no shortest path (inifite loop problem)") {
+  test("test BetweennessBase with no shortest path (inifite loop problem)") {
     val vertices: RDD[(VertexId, Int)] = sc.parallelize(
       Array(
         (1L, 0),
@@ -98,7 +98,7 @@ class BetweennessSuite extends FunSuite with SharedSparkContext {
     println("shortest paths")
     shortest_paths.vertices.collect.foreach((data) => {
       println(s"${data._1}: -----")
-      println(s"Betweenness: ${data._2._1}")
+      println(s"BetweennessBase: ${data._2._1}")
       println(s"Distance: ${data._2._2}")
       println(s"Predecessors: ${data._2._3.mkString(",")}")
     })
@@ -106,7 +106,7 @@ class BetweennessSuite extends FunSuite with SharedSparkContext {
     assert(res.deep == expected_distances.deep)
   }
 
-  test("test Betweenness") {
+  test("test BetweennessBase") {
     val vertices: RDD[(VertexId, Int)] = sc.parallelize(
       Array(
         (1L, 0),
@@ -135,8 +135,8 @@ class BetweennessSuite extends FunSuite with SharedSparkContext {
       (3l, 1.0)
     )
 
-    val betweennessGraph = Betweenness.run(Graph(vertices, edges))
-    println("Betweenness of vertices")
+    val betweennessGraph = BetweennessBase.run(Graph(vertices, edges))
+    println("BetweennessBase of vertices")
     betweennessGraph.vertices.collect
       .foreach((data) => {
         println(s"\tVertex ${data._1}: ${data._2}")

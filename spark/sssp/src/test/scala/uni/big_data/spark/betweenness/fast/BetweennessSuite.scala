@@ -1,4 +1,4 @@
-package uni.big_data.spark.sssp.fast
+package uni.big_data.spark.betweenness.fast
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.apache.spark.graphx._
@@ -9,7 +9,7 @@ import org.scalatest.FunSuite
   * Created by max on 26.11.15.
   */
 class BetweennessSuite extends FunSuite with SharedSparkContext {
-  test("test Betweenness") {
+  test("test BetweennessBase") {
     val vertices: RDD[(VertexId, Int)] = sc.parallelize(
       Array(
         (1L, 0),
@@ -38,8 +38,8 @@ class BetweennessSuite extends FunSuite with SharedSparkContext {
       (3l, 1.0)
     )
 
-    val betweennessGraph = Betweenness.run(Graph(vertices, edges))
-    println("Betweenness of vertices")
+    val betweennessGraph = BetweennessFast.run(Graph(vertices, edges))
+    println("BetweennessBase of vertices")
     betweennessGraph.vertices.collect
       .foreach((data) => {
         println(s"\tVertex ${data._1}: ${data._2}")

@@ -2,8 +2,6 @@ package uni.big_data.spark.sssp
 
 import org.apache.spark.graphx._
 
-import scala.reflect.ClassTag
-
 /**
   * Created by max on 25.11.15.
   **/

@@ -20,9 +20,9 @@ class SingleSourceShortestPathSuite extends FunSuite with SharedSparkContext{
 
     val edges: RDD[Edge[Double]] = sc.parallelize(
       Array(
-        Edge(1L, 2L, 1.),
-        Edge(1L, 3L, 5.),
-        Edge(2L, 3L, 2.)
+        Edge(1L, 2L, 1.0),
+        Edge(1L, 3L, 5.0),
+        Edge(2L, 3L, 2.0)
       )
     )
 
@@ -57,10 +57,10 @@ class SingleSourceShortestPathSuite extends FunSuite with SharedSparkContext{
 
     val edges: RDD[Edge[Double]] = sc.parallelize(
       Array(
-        Edge(1L, 2L, 1.),
-        Edge(1L, 3L, 1.),
-        Edge(2L, 4L, 1.),
-        Edge(3L, 4L, 1.)
+        Edge(1L, 2L, 1.0),
+        Edge(1L, 3L, 1.0),
+        Edge(2L, 4L, 1.0),
+        Edge(3L, 4L, 1.0)
       )
     )
 

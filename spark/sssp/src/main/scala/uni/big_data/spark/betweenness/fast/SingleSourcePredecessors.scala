@@ -1,4 +1,4 @@
-package uni.big_data.spark.sssp.fast
+package uni.big_data.spark.betweenness.fast
 
 import org.apache.spark.graphx._
 
@@ -10,10 +10,10 @@ import org.apache.spark.graphx._
   **/
 object SingleSourcePredecessors {
 
-  // Betweenness value (1), Double Variable for calulations (2), Predeccessors (3), Nr of Successors (4)
+  // BetweennessBase value (1), Double Variable for calulations (2), Predeccessors (3), Nr of Successors (4)
   def run(graph: Graph[(Double, Double, Array[VertexId], Long), Double], sourceId: VertexId):
   Graph[(Double, Double, Array[VertexId], Long), Double] = {
-
+    println("calc predecessors")
     def vertexProgramm(id: VertexId,
                        nodeData: (Double, Double, Array[VertexId], Long),
                        newData: (Double, Array[VertexId])):

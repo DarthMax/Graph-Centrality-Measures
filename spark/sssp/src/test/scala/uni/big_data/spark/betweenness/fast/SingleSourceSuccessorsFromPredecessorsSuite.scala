@@ -1,4 +1,4 @@
-package uni.big_data.spark.sssp.fast
+package uni.big_data.spark.betweenness.fast
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.apache.spark.graphx._
