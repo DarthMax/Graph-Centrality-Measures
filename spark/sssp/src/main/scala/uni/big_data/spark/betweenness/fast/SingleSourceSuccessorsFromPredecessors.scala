@@ -13,7 +13,6 @@ object SingleSourceSuccessorsFromPredecessors {
   def run(graph: Graph[(Double, Double, Array[VertexId], Long), Double],
           sourceId: VertexId):
   Graph[(Double, Double, Array[VertexId], Long), Double] = {
-    println("calc successors")
     def vertexProgramm(id: VertexId,
                        nodeData: (Double, Double, Array[VertexId], Long),
                        newData: Long):
