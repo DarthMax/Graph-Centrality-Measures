@@ -10,26 +10,25 @@ import org.apache.spark.graphx._
 object BetweennessFast {
 
   def run[T](graph: Graph[T, Double]): Graph[Double, Double] = {
-    var betweennessGraph = graph.mapVertices((id, _) =>
+    val workingGraph = graph.mapVertices((id, _) =>
       (0.0, 0.0, Array[VertexId](), 0L)
-    )
-    def runAll(graph: Graph[(Double, Double, Array[VertexId], Long), Double],
-                source: (VertexId, (Double, Double, Array[VertexId], Long))
-               ): Graph[(Double, Double, Array[VertexId], Long), Double] = {
-     // println(s"Knoten: ${source._1}")
-      SingleSourceCalcBetweenness.run(
-        SingleSourceSuccessorsFromPredecessors.run(
-          SingleSourcePredecessors.run(graph, source._1),
-          source._1),
-        source._1)
+    ).cache()
+
+    var betweennessGraph = graph.mapVertices((id,_) => 0.0)
+
+
+    betweennessGraph.vertices.collect().foreach { vertex =>
+      val shortestPaths = SingleSourcePredecessors.run(workingGraph, vertex._1)
+      val successorsAndPredecessors = SingleSourceSuccessorsFromPredecessors.run(shortestPaths, vertex._1)
+      val betweennessValues =  SingleSourceCalcBetweenness.run(successorsAndPredecessors, vertex._1)
+
+      betweennessGraph = betweennessGraph.joinVertices(betweennessValues.vertices)((id,a,b) => a + b._1)
+      betweennessGraph.cache()
     }
-    val graphCopy = betweennessGraph
-    for (vertex <- graphCopy.vertices.collect()) {
-        betweennessGraph.joinVertices(runAll(betweennessGraph, vertex))
-        betweennessGraph
-    }
-    betweennessGraph.vertices.toLocalIterator.foldLeft(betweennessGraph.cache())(runAll)
-    betweennessGraph.mapVertices((id, value) => value._1)
+
+    betweennessGraph
+    //betweennessGraph.vertices.toLocalIterator.foldLeft(betweennessGraph)(runBoth)
+    //   .mapVertices((id, value) => value._1)
   }
 
 }
