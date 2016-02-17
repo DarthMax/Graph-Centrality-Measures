@@ -10,31 +10,25 @@ import org.apache.spark.graphx._
 object BetweennessFast {
 
   def run[T](graph: Graph[T, Double]): Graph[Double, Double] = {
-    var betweennessGraph = graph.mapVertices((id, _) =>
+    val workingGraph = graph.mapVertices((id, _) =>
       (0.0, 0.0, Array[VertexId](), 0L)
-    )//.cache()
+    ).cache()
 
-    def runBoth(graph: Graph[(Double, Double, Array[VertexId], Long), Double],
-                source: (VertexId, (Double, Double, Array[VertexId], Long))
-               ): Graph[(Double, Double, Array[VertexId], Long), Double] = {
-      println("\n\n" + source._1)
-      //graph.vertices.collect
-       // .foreach((data) => {
-        //  println(s"\tVertex ${data._1}: ${data._2._1}")
-      //})
-      SingleSourceCalcBetweenness.run(
-        SingleSourceSuccessorsFromPredecessors.run(
-          SingleSourcePredecessors.run(graph, source._1),
-          source._1),
-        source._1)
+    var betweennessGraph = graph.mapVertices((id,_) => 0.0)
+
+
+    betweennessGraph.vertices.collect().foreach { vertex =>
+      val shortestPaths = SingleSourcePredecessors.run(workingGraph, vertex._1)
+      val successorsAndPredecessors = SingleSourceSuccessorsFromPredecessors.run(shortestPaths, vertex._1)
+      val betweennessValues =  SingleSourceCalcBetweenness.run(successorsAndPredecessors, vertex._1)
+
+      betweennessGraph = betweennessGraph.joinVertices(betweennessValues.vertices)((id,a,b) => a + b._1)
+      betweennessGraph.cache()
     }
-   // val graphCopy = betweennessGraph//.clone().asInstanceOf[Graph[(Double, Double, Array[VertexId], Long), Double]]
-    //for (vertex <- graphCopy.vertices.collect()) {
-    //  betweennessGraph = runBoth(betweennessGraph, vertex)
-   // }
-   // graphCopy.mapVertices((id, value) => value._1)
-    betweennessGraph.vertices.toLocalIterator.foldLeft(betweennessGraph)(runBoth)
-      .mapVertices((id, value) => value._1)
+
+    betweennessGraph
+    //betweennessGraph.vertices.toLocalIterator.foldLeft(betweennessGraph)(runBoth)
+    //   .mapVertices((id, value) => value._1)
   }
 
 }
