@@ -14,7 +14,7 @@ class DataSetTest extends FunSuite with SharedSparkContext{
     //Dataset is social network edge list found at http://snap.stanford.edu/data/higgs-twitter.html
     val graph:Graph[Int,Int] = GraphLoader.edgeListFile(
       sc,
-      "data/higgs-social_network_smallest.edgelist",
+      "data/higgs-social_network_smallestest.edgelist",
       //"data/test_from_file.edgelist",
       canonicalOrientation = true)
     //val graph:Graph[Int,Int] = GraphLoader.edgeListFile(sc,,true)

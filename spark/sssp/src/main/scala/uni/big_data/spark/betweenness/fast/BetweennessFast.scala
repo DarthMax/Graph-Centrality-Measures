@@ -25,11 +25,11 @@ object BetweennessFast {
     }
     val graphCopy = betweennessGraph
     for (vertex <- graphCopy.vertices.collect()) {
-        betweennessGraph = runAll(betweennessGraph, vertex)
+        betweennessGraph.joinVertices(runAll(betweennessGraph, vertex))
         betweennessGraph
     }
+    betweennessGraph.vertices.toLocalIterator.foldLeft(betweennessGraph.cache())(runAll)
     betweennessGraph.mapVertices((id, value) => value._1)
-    //betweennessGraph.vertices.toLocalIterator.foldLeft(betweennessGraph)(runAll)
   }
 
 }
