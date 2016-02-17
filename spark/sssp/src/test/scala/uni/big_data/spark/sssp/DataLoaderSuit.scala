@@ -18,6 +18,5 @@ class DataLoaderSuit extends FunSuite with SharedSparkContext{
 
 
     assert(456626 == graph.vertices.collect().length)
-
   }
 }

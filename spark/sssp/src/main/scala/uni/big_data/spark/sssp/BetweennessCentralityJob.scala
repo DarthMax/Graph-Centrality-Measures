@@ -1,15 +1,13 @@
 package uni.big_data.spark.sssp
 
-
 import java.util.Calendar
 
-import org.apache.spark.SparkContext
-import org.apache.spark.SparkConf
-import org.apache.log4j.{Level, LogManager, Logger}
+import org.apache.log4j._
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 
-object SSSPJob   {
+object BetweennessCentralityJob   {
 
   var sc:SparkContext = null
 
@@ -22,23 +20,15 @@ object SSSPJob   {
 
     LogManager.getRootLogger.setLevel(Level.WARN)
 
-    val sourceId:VertexId = 5L
-
-    //Dataset is social network edge list found at http://snap.stanford.edu/data/higgs-twitter.html
-    val graph:Graph[Int,Int] = GraphLoader.edgeListFile(sc, "data/higgs-social_network.edgelist",true)
+    val graph:Graph[Int,Int] = GraphLoader.edgeListFile(sc, "data/sample_graph.txt",true)
 
     val weightedGraph = graph.mapEdges((e:Edge[Int]) => e.attr.toDouble)
 
     val t1 = Calendar.getInstance().getTime
-    val shortest_paths = SingleSourceShortestPath.run(weightedGraph,sourceId)
+    val betweenness = BetweennessCentrality.run(weightedGraph)
     val t2 = Calendar.getInstance().getTime
 
-    shortest_paths.vertices.collect.foreach( (data) => {
-      println(s"${data._1}: -----")
-      println(s"Distance: ${data._2._1}")
-      println(s"Predecessors: ${data._2._2.mkString(",")}")
-    })
-
+    betweenness.vertices.collect.foreach( (data) => println(s"${data._1}: ${data._2}"))
     println(s"Took: ${(t2.getTime - t1.getTime) / 1000.0}")
   }
 
@@ -68,4 +58,5 @@ object SSSPJob   {
 
     Graph(vertices, relationships)
   }
+
 }

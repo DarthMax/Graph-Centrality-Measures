@@ -2,7 +2,6 @@ package uni.big_data.spark.sssp
 
 import org.apache.spark.graphx._
 
-import scala.reflect.ClassTag
 
 /**
   * Created by max on 25.11.15.
@@ -16,7 +15,7 @@ object SingleSourceShortestPath {
         (0.0,Array[VertexId]())
       else
         (Double.PositiveInfinity,Array[VertexId]())
-    ).cache()
+    )
 
     def vertexProgramm(id:VertexId, nodeData:(Double,Array[VertexId]), newData:(Double,Array[VertexId])): (Double,Array[VertexId]) = {
       if (nodeData._1 > newData._1)
@@ -30,7 +29,7 @@ object SingleSourceShortestPath {
     def sendMsg(triplet: EdgeTriplet[(Double,Array[VertexId]),Double]): Iterator[(VertexId,(Double,Array[VertexId]))] = {
       val tripletDistance = triplet.srcAttr._1 + triplet.attr
 
-      if (tripletDistance < triplet.dstAttr._1 || (tripletDistance == triplet.dstAttr._1 && !triplet.dstAttr._2.contains(triplet.srcId) )) {
+      if (tripletDistance < triplet.dstAttr._1 || (tripletDistance == triplet.dstAttr._1 && !triplet.dstAttr._2.contains(triplet.srcId) && !(tripletDistance==Double.PositiveInfinity) )) {
         Iterator((triplet.dstId, (tripletDistance, Array(triplet.srcId))))
       } else {
         Iterator.empty

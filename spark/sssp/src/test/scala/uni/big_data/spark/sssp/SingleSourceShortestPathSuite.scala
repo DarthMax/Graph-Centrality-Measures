@@ -43,6 +43,12 @@ class SingleSourceShortestPathSuite extends FunSuite with SharedSparkContext{
 
     assert(res.deep == expected_distances.deep )
 
+    shortest_paths.vertices.collect.foreach( (data) => {
+      println(s"${data._1}: -----")
+      println(s"Distance: ${data._2._1}")
+      println(s"Predecessors: ${data._2._2.mkString(",")}")
+    })
+
   }
 
   test("store all predecessors if distances are equal") {
@@ -76,5 +82,11 @@ class SingleSourceShortestPathSuite extends FunSuite with SharedSparkContext{
 
 
     assert(res.contains(with_double_predecessors))
+
+    shortest_paths.vertices.collect.foreach( (data) => {
+      println(s"${data._1}: -----")
+      println(s"Distance: ${data._2._1}")
+      println(s"Predecessors: ${data._2._2.mkString(",")}")
+    })
   }
 }
