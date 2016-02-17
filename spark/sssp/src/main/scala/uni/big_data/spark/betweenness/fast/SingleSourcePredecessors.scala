@@ -13,7 +13,6 @@ object SingleSourcePredecessors {
   // BetweennessBase value (1), Double Variable for calulations (2), Predeccessors (3), Nr of Successors (4)
   def run(graph: Graph[(Double, Double, Array[VertexId], Long), Double], sourceId: VertexId):
   Graph[(Double, Double, Array[VertexId], Long), Double] = {
-    println("calc predecessors")
     def vertexProgramm(id: VertexId,
                        nodeData: (Double, Double, Array[VertexId], Long),
                        newData: (Double, Array[VertexId])):
@@ -42,7 +41,7 @@ object SingleSourcePredecessors {
         || (distanceCandidate != Double.PositiveInfinity // or todo I think infinity messages where sent
         && distanceCandidate == triplet.dstAttr._2 // new path length is the same as old
         && !triplet.dstAttr._3.contains(triplet.srcId))) // and source vertex is not known as predecessor
-        Iterator((triplet.dstId, (distanceCandidate, Array(triplet.srcId)))) // send new length and candidate
+          Iterator((triplet.dstId, (distanceCandidate, Array(triplet.srcId)))) // send new length and candidate
       else
         Iterator.empty
     }
