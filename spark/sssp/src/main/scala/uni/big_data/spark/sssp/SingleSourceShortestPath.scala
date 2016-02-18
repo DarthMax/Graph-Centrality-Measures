@@ -2,6 +2,7 @@ package uni.big_data.spark.sssp
 
 import org.apache.spark.graphx._
 
+
 /**
   * Created by max on 25.11.15.
   **/
@@ -28,7 +29,7 @@ object SingleSourceShortestPath {
     def sendMsg(triplet: EdgeTriplet[(Double,Array[VertexId]),Double]): Iterator[(VertexId,(Double,Array[VertexId]))] = {
       val tripletDistance = triplet.srcAttr._1 + triplet.attr
 
-      if (tripletDistance < triplet.dstAttr._1 || (tripletDistance == triplet.dstAttr._1 && !triplet.dstAttr._2.contains(triplet.srcId) )) {
+      if (tripletDistance < triplet.dstAttr._1 || (tripletDistance == triplet.dstAttr._1 && !triplet.dstAttr._2.contains(triplet.srcId) && !(tripletDistance==Double.PositiveInfinity) )) {
         Iterator((triplet.dstId, (tripletDistance, Array(triplet.srcId))))
       } else {
         Iterator.empty
