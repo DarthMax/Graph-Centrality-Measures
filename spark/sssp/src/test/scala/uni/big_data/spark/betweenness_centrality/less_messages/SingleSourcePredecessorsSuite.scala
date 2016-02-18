@@ -1,4 +1,4 @@
-package uni.big_data.spark.betweenness.fast
+package uni.big_data.spark.betweenness_centrality.less_messages
 
 import com.holdenkarau.spark.testing.SharedSparkContext
 import org.apache.spark.graphx._

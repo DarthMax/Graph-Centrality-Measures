@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>spark-sssp</groupId>
-  <artifactId>spark-sssp</artifactId>
+  <groupId>spark-betweenness-centrality</groupId>
+  <artifactId>spark-betweenness-centrality</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>${project.artifactId}</name>
-  <description>An implementation of SSSP problem in spark and scala</description>
-  <inceptionYear>2010</inceptionYear>
+  <description>An implementation of Betweenness Centrality problem in spark and scala</description>
+  <inceptionYear>2016</inceptionYear>
 
   <properties>
     <maven.compiler.source>1.6</maven.compiler.source>

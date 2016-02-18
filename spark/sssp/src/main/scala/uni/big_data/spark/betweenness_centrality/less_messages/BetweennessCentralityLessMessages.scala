@@ -1,4 +1,4 @@
-package uni.big_data.spark.betweenness.fast
+package uni.big_data.spark.betweenness_centrality.less_messages
 
 import org.apache.spark.graphx._
 
@@ -7,7 +7,7 @@ import org.apache.spark.graphx._
   * value._1 is not touched here. This value is for betweenness.
   * Created by wolf on 01.12.2015
   **/
-object BetweennessFast {
+object BetweennessCentralityLessMessages {
 
   def run[T](graph: Graph[T, Double]): Graph[Double, Double] = {
     val workingGraph = graph.mapVertices((id, _) =>
@@ -32,8 +32,6 @@ object BetweennessFast {
     }
 
     betweennessGraph
-    //betweennessGraph.vertices.toLocalIterator.foldLeft(betweennessGraph)(runBoth)
-    //   .mapVertices((id, value) => value._1)
   }
 
 }

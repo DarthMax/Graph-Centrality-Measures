@@ -1,13 +1,12 @@
-package uni.big_data.spark.betweenness.fast
-
-import java.util.Calendar
+package uni.big_data.spark
 
 import org.apache.log4j.{Level, LogManager}
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
+import uni.big_data.spark.sssp.SingleSourceShortestPath
 
-object BetweennessCentralityJob   {
+object SSSPJob   {
 
   var sc:SparkContext = null
 
@@ -19,16 +18,16 @@ object BetweennessCentralityJob   {
     sc = new SparkContext(conf)
 
     LogManager.getRootLogger.setLevel(Level.WARN)
+    val sourceId:VertexId = 1L
 
-    val graph:Graph[Int,Int] = GraphLoader.edgeListFile(sc, "data/sample_graph.txt")
-    val weightedGraph = graph.mapEdges((e:Edge[Int]) => e.attr.toDouble)
+    val example_graph = load_sample_data()
+    val shortest_paths = SingleSourceShortestPath.run(example_graph,sourceId)
 
-    val t1 = Calendar.getInstance().getTime
-    val betweennessCentralityValues = BetweennessFast.run(weightedGraph)
-    val t2 = Calendar.getInstance().getTime
-
-    betweennessCentralityValues.vertices.collect.foreach( (data) => println(s"${data._1}: ${data._2}"))
-    println(s"Took: ${(t2.getTime - t1.getTime) / 1000.0}")
+    shortest_paths.vertices.collect.foreach( (data) => {
+      println(s"${data._1}: -----")
+      println(s"Distance: ${data._2._1}")
+      println(s"Predecessors: ${data._2._2.mkString(",")}")
+    })
   }
 
   def load_sample_data(): Graph[Int,Double] = {
