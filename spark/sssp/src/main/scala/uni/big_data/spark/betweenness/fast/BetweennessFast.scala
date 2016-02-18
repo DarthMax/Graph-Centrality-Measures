@@ -14,15 +14,20 @@ object BetweennessFast {
       (0.0, 0.0, Array[VertexId](), 0L)
     ).cache()
 
-    var betweennessGraph = graph.mapVertices((id,_) => 0.0)
+    var betweennessGraph = graph.mapVertices((id,_) => 0.0).cache()
 
 
-    betweennessGraph.vertices.collect().foreach { vertex =>
+    var vertices = workingGraph.vertices.collect()
+
+    vertices.foreach { vertex =>
       val shortestPaths = SingleSourcePredecessors.run(workingGraph, vertex._1)
+
       val successorsAndPredecessors = SingleSourceSuccessorsFromPredecessors.run(shortestPaths, vertex._1)
+
       val betweennessValues =  SingleSourceCalcBetweenness.run(successorsAndPredecessors, vertex._1)
 
       betweennessGraph = betweennessGraph.joinVertices(betweennessValues.vertices)((id,a,b) => a + b._1)
+
       betweennessGraph.cache()
     }
 

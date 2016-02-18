@@ -58,7 +58,7 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
 
     assert(res.deep == expected_distances.deep)
   }
-  test("test BetweennessBase with no shortest path (inifite loop problem)") {
+  test("test BetweennessPredecessors with no shortest path (inifite loop problem)") {
     //same graph start at vertex 4
     val vertices: RDD[(VertexId, Int)] = sc.parallelize(
       Array(

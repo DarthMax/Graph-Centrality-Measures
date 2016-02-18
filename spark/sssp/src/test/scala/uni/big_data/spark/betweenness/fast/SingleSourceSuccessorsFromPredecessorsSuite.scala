@@ -52,11 +52,11 @@ class SingleSourceSuccessorsFromPredecessorsSuite extends FunSuite with SharedSp
 
     //successsors have to be those
     val expectedSuccessors = Array(
-      (4l, Array[VertexId](5L).deep),
-      (1l, Array[VertexId](2l, 3l).deep),
-      (5l, Array[VertexId]().deep),
-      (2l, Array[VertexId](4L).deep),
-      (3l, Array[VertexId](4L).deep)
+      (4l, 1),
+      (1l, 0),
+      (5l, 0),
+      (2l, 1),
+      (3l, 1)
     )
     val resultSuccessors = successors.map(vertex => (vertex._1, vertex._2._4))
 

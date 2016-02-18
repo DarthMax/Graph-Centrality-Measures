@@ -13,10 +13,13 @@ object SingleSourceSuccessorsFromPredecessors {
   def run(graph: Graph[(Double, Double, Array[VertexId], Long), Double],
           sourceId: VertexId):
   Graph[(Double, Double, Array[VertexId], Long), Double] = {
-    def vertexProgramm(id: VertexId,
-                       nodeData: (Double, Double, Array[VertexId], Long),
-                       newData: Long):
-    (Double, Double, Array[VertexId], Long) = {
+
+    def vertexProgramm(
+      id: VertexId,
+      nodeData: (Double, Double, Array[VertexId], Long),
+      newData: Long):
+      (Double, Double, Array[VertexId], Long) = {
+
       if (newData == Long.MinValue) //initial message (first round)
         (nodeData._1, 1.0, nodeData._3, 0L) //initialize with flag: "ready to sent"
       else
@@ -25,13 +28,17 @@ object SingleSourceSuccessorsFromPredecessors {
 
     def sendMsg(triplet: EdgeTriplet[(Double, Double, Array[VertexId], Long), Double]):
     Iterator[(VertexId, Long)] = {
-      if (triplet.dstAttr._3.contains(triplet.srcId) // If the source is in predecessor list from destination
-        && triplet.dstAttr._2 == 1.0 // and this is the first message
-        && triplet.srcId != sourceId) // and the source is not the global sourceId
-      {
-        Iterator((triplet.srcId, 1L), // There is one successor in source
-          (triplet.dstId, 0L)) // No messages needed to be sent from destination
+      if (
+          triplet.dstAttr._3.contains(triplet.srcId) // If the source is in predecessor list from destination
+          && triplet.dstAttr._2 == 1.0 // and this is the first message
+          && triplet.srcId != sourceId
+      ) { // and the source is not the global sourceId
+        Iterator(
+          (triplet.srcId, 1L), // There is one successor in source
+          (triplet.dstId, 0L) // Does not terminate without because EdgeTriplet reference is predecessor
+        )
       }
+
       else
         Iterator.empty
     }
