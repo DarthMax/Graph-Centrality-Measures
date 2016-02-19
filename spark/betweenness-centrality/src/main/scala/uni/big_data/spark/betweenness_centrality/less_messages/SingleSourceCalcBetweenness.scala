@@ -15,23 +15,26 @@ object SingleSourceCalcBetweenness {
   Graph[(Double, Double, Array[VertexId], Long), Double] = {
     def vertexProgramm(id: VertexId,
                        nodeData: (Double, Double, Array[VertexId], Long),
-                       newData: (Double, Long)):
+                       newData: (Double, Long)): //
     (Double, Double, Array[VertexId], Long) = {
-      // send messages only if vertex have got all messages form successors.
-      // every time this vertex gets a message it substracts number of successors from counter (4)
+      // send messages only if vertex have got all
+      // messages form successors.
+      // every time this vertex gets a message it
+      // deducts number of successors from counter (4)
       if (newData._2 == Long.MinValue) // Initial message
         (nodeData._1, newData._1, nodeData._3, nodeData._4)
-      else if (newData._2 != 0L) {
-        // Collecting mode:
-        (nodeData._1 + newData._1, //  add values to own betweenness
-          nodeData._2 + newData._1, //  add values to 'betweenness to send'
-          nodeData._3, //  leave predecessor list untouched
-          nodeData._4 - newData._2) //  subtract the number of successor
+      else if (newData._2 != 0L) {  // There is info from newData._2 successors
+        // * Collecting mode:
+        (nodeData._1 + newData._1,  // add values to own betweenness
+          nodeData._2 + newData._1, // add values to 'betweenness to send'
+          nodeData._3,              // leave predecessor list untouched
+          nodeData._4 - newData._2) // deduct the number of successor
       }
       else {
-        // Everything is done mode:
+        // * Everything is done mode:
         assert(nodeData._4 == 0L) //  control if there are really no successors left
-        (nodeData._1, 0.0, Array[VertexId](), nodeData._4) //  reset everything but the betweenness value (1)
+         //  reset everything but the betweenness value (1)
+        (nodeData._1, 0.0, Array[VertexId](), nodeData._4)
       }
     }
 

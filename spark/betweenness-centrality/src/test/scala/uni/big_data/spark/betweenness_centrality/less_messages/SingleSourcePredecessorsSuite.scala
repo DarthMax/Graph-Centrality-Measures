@@ -79,7 +79,7 @@ class SingleSourcePredecessorsSuite extends FunSuite with SharedSparkContext {
     )
 
     val expected_distances = Array(
-      (4l, (0.0, 0.0, Array[VertexId]().deep, Array[VertexId]().deep)),
+      (4l, (0.0, 0.0, Array[VertexId]().deep, 0L)),
       (1l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, 0L)),
       (2l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, 0L)),
       (3l, (0.0, Double.PositiveInfinity, Array[VertexId]().deep, 0L))

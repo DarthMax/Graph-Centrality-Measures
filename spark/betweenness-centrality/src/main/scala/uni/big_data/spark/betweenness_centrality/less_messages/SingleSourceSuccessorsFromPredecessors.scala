@@ -27,12 +27,15 @@ object SingleSourceSuccessorsFromPredecessors {
     }
 
     def sendMsg(triplet: EdgeTriplet[(Double, Double, Array[VertexId], Long), Double]):
+    // The information flows in the alternating direction.
+    // Because of this we need to inform the destination,
+    // that there are no messages needed after the first one.
     Iterator[(VertexId, Long)] = {
       if (
           triplet.dstAttr._3.contains(triplet.srcId) // If the source is in predecessor list from destination
-          && triplet.dstAttr._2 == 1.0 // and this is the first message
-          && triplet.srcId != sourceId
-      ) { // and the source is not the global sourceId
+          && triplet.dstAttr._2 == 1.0               // and this is the first message
+          && triplet.srcId != sourceId               // and the source is not the global sourceId
+      ) {
         Iterator(
           (triplet.srcId, 1L), // There is one successor in source
           (triplet.dstId, 0L) // Does not terminate without because EdgeTriplet reference is predecessor
