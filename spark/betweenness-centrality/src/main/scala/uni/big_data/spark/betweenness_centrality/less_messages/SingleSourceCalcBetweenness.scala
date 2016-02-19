@@ -4,7 +4,8 @@ import org.apache.spark.graphx._
 
 /**
   * Calculate the betweenness value for each vertex.
-  * Sending back betweenness knowledge to each predecessor
+  * Sending back betweenness knowledge to each predecessor.
+  *
   * Created by wolf on 04.12.15.
   **/
 object SingleSourceCalcBetweenness {
